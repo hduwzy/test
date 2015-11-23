@@ -12,7 +12,7 @@ class Show extends Controller {
 
 	public function after()
 	{
-		echo "<h1>After</h1>";
+		//echo "<h1>After</h1>";
 	}
 
 	public function test()
