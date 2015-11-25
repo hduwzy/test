@@ -10,5 +10,4 @@ return array(
     'flight\\' => array($baseDir . '/flight'),
     'apps\\' => array($baseDir . '/apps'),
     'Doctrine\\Instantiator\\' => array($vendorDir . '/doctrine/instantiator/src/Doctrine/Instantiator'),
-    'Aura\\Sql\\' => array($vendorDir . '/aura/sql/src'),
 );

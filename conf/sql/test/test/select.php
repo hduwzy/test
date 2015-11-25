@@ -2,71 +2,16 @@
 return array(
 //根据产品添加时间获取产品
 //================================================================================================================================//
-'tbtest' => array(
-	'sql' 		=> 'select {fields} from {table}',
-	'tables'	=> array('tbtest' => 'a',),
-	// 'join'		=> array(
-	// 	'relation' 	=> '#a join #b',
-	// 	'on' 		=> 'a.goods_id = b.goods_id',
-	// 	'join'		=> array(
-	// 		'relation' 	=> 'join #c',
-	// 		'on'		=> 'a.cat_id = c.cat_id',
-	// 	)
-	// ),
+'attr' => array(
+	'sql' 		=> 'select {fields} from {table} where a.cat_id=:cat_id and b.language_flag=:lang_flag',
+	'tables'	=> array('rs_attribute' => 'a','rs_attribute_multi' => 'b'),
+	'join'		=> array(
+		'relation'	=> '#a join #b',
+		'on'		=> 'a.attr_id = b.attr_id'
+	),
 	'fields' 	=> array(
-		'tb_test' 			=> array('*'),
-		'_other_'			=> array(),
-	),
-	// 'params'	=> array(
-	// 	'ltime' => array('required' => 'required', 'comment' => '时间左区间'),
-	// 	'rtime' => array('required' => 'option', 'comment' => '时间右区间'),
-	// ),
-	'comments' 	=> array(
-		'comment'	=> '根据产品添加时间获取产品',
-	),
-),
-//================================================================================================================================//
-//根据产品添加时间获取产品
-//================================================================================================================================//
-'tbtest_by_name' => array(
-	'sql' 		=> 'select {fields} from {table} where a.name=:name',
-	'tables'	=> array('tb_test' => 'a',),
-	// 'join'		=> array(
-	// 	'relation' 	=> '#a join #b',
-	// 	'on' 		=> 'a.goods_id = b.goods_id',
-	// 	'join'		=> array(
-	// 		'relation' 	=> 'join #c',
-	// 		'on'		=> 'a.cat_id = c.cat_id',
-	// 	)
-	// ),
-	'fields' 	=> array(
-		'tb_test' 			=> array('*'),
-		'_other_'			=> array(),
-	),
-	// 'params'	=> array(
-	// 	'ltime' => array('required' => 'required', 'comment' => '时间左区间'),
-	// 	'rtime' => array('required' => 'option', 'comment' => '时间右区间'),
-	// ),
-	'comments' 	=> array(
-		'comment'	=> '根据产品添加时间获取产品',
-	),
-),
-//================================================================================================================================//
-//根据产品添加时间获取产品
-//================================================================================================================================//
-'tbtest_by_age' => array(
-	'sql' 		=> 'select {fields} from {table} where a.age=:age',
-	'tables'	=> array('tb_test' => 'a',),
-	// 'join'		=> array(
-	// 	'relation' 	=> '#a join #b',
-	// 	'on' 		=> 'a.goods_id = b.goods_id',
-	// 	'join'		=> array(
-	// 		'relation' 	=> 'join #c',
-	// 		'on'		=> 'a.cat_id = c.cat_id',
-	// 	)
-	// ),
-	'fields' 	=> array(
-		'tb_test' 			=> array('*'),
+		'rs_attribute' 				=> array('attr_id', 'left_show'),
+		'rs_attribute_multi' 		=> array('language_flag', 'attr_name'),
 		'_other_'			=> array(),
 	),
 	// 'params'	=> array(

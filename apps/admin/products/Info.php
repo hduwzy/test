@@ -45,10 +45,7 @@ class Info extends Controller {
 		// print_r($data);
 		// $data = $db->fetchAll('sql.test.test.select.tbtest_by_name', array('name' => 'tom'));
 		// print_r($data);
-		$data = $db->fetchAffected('sql.test.test.delete.tbtest_by_age', array('age' => 111));
-		print_r($data);
-		$data = $db->fetchAll('sql.test.test.select.tbtest_by_name', array('name' => 'tom'));
-		print_r($data);
+		
 		// $db->fetchAffected('sql.test.test.insert.tbtest', array('age' => 10, 'name' => 'tom'));
 		// $db->fetchAffected('sql.test.test.insert.tbtest', array('age' => 11, 'name' => 'lily'));
 		// $db->fetchAffected('sql.test.test.insert.tbtest', array('age' => 19, 'name' => 'lucy'));

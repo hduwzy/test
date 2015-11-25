@@ -20,7 +20,7 @@ $app->register('cookie', '\sysext\net\Cookie', array(), function ($obj) use ($ap
 	$obj->app = $app;
 });
 
-$app->register('db', 'sysext\db\Mysql', array(), function ($obj) use($app) {
+$app->register('db', 'sysext\db\mysql\Pdoex', array(), function ($obj) use($app) {
 	$obj->app = $app;
 });
 

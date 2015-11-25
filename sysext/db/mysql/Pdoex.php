@@ -3,7 +3,7 @@ namespace sysext\db\mysql;
 
 use sysext\db\mysql\Queryparse;
 use sysext\db\mysql\PDOMemcache;
-
+use \PDO;
 class Pdoex {
 	private $pdos;
 	private $parsed_stm;
@@ -12,6 +12,7 @@ class Pdoex {
 	public $app;
 	private $connect_name;
 	private $cache;
+	private $last_stm;
 
 	public function __construct()
 	{
@@ -32,6 +33,14 @@ class Pdoex {
 			($this->connect_name) : $this->app->get('app.name');
 	}
 
+	public function errorMsg()
+	{
+		$info = $this->last_stm->errorCode();
+		$info .= ':';
+		$info .= print_r($this->last_stm->errorInfo(), true);
+		return $info;
+	}
+
 	public function setCache(CacheInterface $cache)
 	{
 		$this->cache = $cache;
@@ -48,15 +57,22 @@ class Pdoex {
 	public function fetchAll($key, $params = array(), $from_cache = false)
 	{
 		$stm = $this->prepareStm($key);
-		$stm->execute($this->prefixParams($params));
+
+		$bool = $stm->execute($this->prefixParams($params));
+		if (!$bool) {
+			return false;
+		}
 		$stm->setFetchMode(PDO::FETCH_ASSOC);
-		return $stm->fetchAll();
+		return $stm->fetchAll(PDO::FETCH_ASSOC);
 	}
 
 	public function fetchAllObjects($key, $params = array(), $from_cache = false)
 	{
 		$stm = $this->prepareStm($key);
-		$stm->execute($this->prefixParams($params));
+		$bool = $stm->execute($this->prefixParams($params));
+		if (!$bool) {
+			return false;
+		}
 		$stm->setFetchMode(PDO::FETCH_ASSOC);
 		$ret = array();
 		while(($temp = $stm->fetchObject())) {
@@ -68,9 +84,12 @@ class Pdoex {
 	public function fetchOne($key, $params = array(), $from_cache = false)
 	{
 		$stm = $this->prepareStm($key);
-		$stm->execute($this->prefixParams($params));
+		$bool = $stm->execute($this->prefixParams($params));
+		if (!$bool) {
+			return false;
+		}
 		$stm->setFetchMode(PDO::FETCH_ASSOC);
-		return $stm->fetchRow();
+		return $stm->fetch();
 	}
 
 	public function fetchGroup($key, $params = array(), $from_cache = false)
@@ -138,12 +157,17 @@ class Pdoex {
 		$pdo = $this->connect($this->getConnectName(), $read_only);
 		$stm = $pdo->prepare($sql);
 		$this->stm[$sql_md5] = $stm;
+		$this->last_stm = $stm;
 		return $stm;
 	}
 
-	public function prefixParams($v, &$k)
+	public function prefixParams($params)
 	{
-		$k = ':' . $k;
+		$new_param = array();
+		foreach ($params as $key => $value) {
+			$key = ':' . $key;
+		}
+		return $params;
 	}
 
 	public function order($field = '')
@@ -192,14 +216,15 @@ class Pdoex {
 
 	public function connect($app_name, $read_only = false)
 	{
-		$grant_string = $readonly ? 'read' : 'write';
-		$connect_info_key = "db.{$app_name}.{$grant_string}";
+		$grant_string = $read_only ? 'read' : 'write';
+		$connect_info_key = "db.{$app_name}.{$grant_string}.*";
 
 		if (isset($this->pdos[$connect_info_key])) {
 			return $this->pdos[$connect_info_key];
 		}
 
 		$connect_info = $this->app->conf()->get($connect_info_key);
+		
 		try {
 			$pdo = new PDO(
 				$connect_info['dsn'],
@@ -217,7 +242,7 @@ class Pdoex {
 	public function getOptypeFromKey($key)
 	{
 		$temp = explode('.', $key);
-		return $temp[count($temp) - 1];
+		return $temp[count($temp) - 2];
 	}
 
 }
