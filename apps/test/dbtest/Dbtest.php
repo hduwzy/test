@@ -34,12 +34,11 @@ class Dbtest extends Controller {
 		$app = $this->app;
 		$db = $app->db();
 
-		$data = $db->limit(3, 10)->order('a.attr_id')
-			->fetchAllObjects('sql.test.test.select.attr', array('cat_id' => 67, 'lang_flag' => 'en'));
+		$data = $db->fetchAll('sql.test.test.select.attr', array('cat_id' => 67, 'lang_flag' => 'en'));
 		if (false === $data) {
 			die($db->errorMsg());
 		}
 		echo "<pre>";
-		var_dump($data);
+		print_r($data);
 	}
 }

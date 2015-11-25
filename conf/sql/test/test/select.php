@@ -10,9 +10,9 @@ return array(
 		'on'		=> 'a.attr_id = b.attr_id'
 	),
 	'fields' 	=> array(
-		'rs_attribute' 				=> array('attr_id', 'left_show'),
-		'rs_attribute_multi' 		=> array('language_flag', 'attr_name'),
-		'_other_'			=> array(),
+		'rs_attribute' 			=> array( 'cat_id', 'attr_id', 'left_show'),
+		'rs_attribute_multi' 	=> array('language_flag', 'attr_name'),
+		'_other_'				=> array(),
 	),
 	// 'params'	=> array(
 	// 	'ltime' => array('required' => 'required', 'comment' => '时间左区间'),
