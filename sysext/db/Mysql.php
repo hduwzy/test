@@ -55,7 +55,7 @@ class Mysql{
 		return $this;
 	}
 
-	public function parseSelectSql($key, $params = array())
+	public function parseSelectSql($key, $params = array()/*always empty*/)
 	{
 		$sql_info 	= $this->app->conf()->get($key);
 		if (!$sql_info) {
@@ -175,7 +175,7 @@ class Mysql{
 		return $sql;
 	}
 
-	public function parseDeleteSql($key, $params = array())
+	public function parseDeleteSql($key, $params = array()/*always empty*/)
 	{
 		$sql_info = $this->app->conf()->get($key);
 		if (!$sql_info) {

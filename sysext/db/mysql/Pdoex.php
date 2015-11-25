@@ -2,6 +2,7 @@
 namespace sysext\db\mysql;
 
 use sysext\db\mysql\Queryparse;
+use sysext\db\mysql\PDOMemcache;
 
 class Pdoex {
 	private $pdos;
@@ -10,6 +11,7 @@ class Pdoex {
 	private $parser;
 	public $app;
 	private $connect_name;
+	private $cache;
 
 	public function __construct()
 	{
@@ -26,42 +28,84 @@ class Pdoex {
 
 	public function getConnectName()
 	{
-		return isset($this->connect_name) ? $this->connect_name : $this->app->get('app.name');
+		return isset($this->connect_name) ? 
+			($this->connect_name) : $this->app->get('app.name');
 	}
 
-	public function fetchRow($key, $params = array())
+	public function setCache(CacheInterface $cache)
 	{
-
+		$this->cache = $cache;
 	}
 
-	public function fetchAll($key, $params = array())
+	public function getCache()
 	{
-
+		if (null === $this->cache) {
+			$this->cache = new PDOMemcache();
+		}
+		return $this->cache;
 	}
 
-	public function fetchAssoc($key, $params = array())
+	public function fetchAll($key, $params = array(), $from_cache = false)
 	{
-
+		$stm = $this->prepareStm($key);
+		$stm->execute($this->prefixParams($params));
+		$stm->setFetchMode(PDO::FETCH_ASSOC);
+		return $stm->fetchAll();
 	}
 
-	public function fetchGroup($key, $params = array())
+	public function fetchAllObjects($key, $params = array(), $from_cache = false)
 	{
+		$stm = $this->prepareStm($key);
+		$stm->execute($this->prefixParams($params));
+		$stm->setFetchMode(PDO::FETCH_ASSOC);
+		$ret = array();
+		while(($temp = $stm->fetchObject())) {
+			$ret[] = $temp;
+		}
+		return $ret;
+	}
 
+	public function fetchOne($key, $params = array(), $from_cache = false)
+	{
+		$stm = $this->prepareStm($key);
+		$stm->execute($this->prefixParams($params));
+		$stm->setFetchMode(PDO::FETCH_ASSOC);
+		return $stm->fetchRow();
+	}
+
+	public function fetchGroup($key, $params = array(), $from_cache = false)
+	{
+		// TODO
 	}
 
 	public function update($key, $values, $params = array())
 	{
-
+		$stm = $this->prepareStm($key, $values);
+		$bool = $stm->execute($params);
+		if (!$bool) {
+			return false;
+		}
+		return $stm->rouCount();
 	}
 
 	public function insert($key, $values)
 	{
-
+		$stm = $this->prepareStm($key, $values);
+		$bool = $stm->execute();
+		if (!$bool) {
+			return false;
+		}
+		return $stm->rouCount();
 	}
 
 	public function delete($key, $params = array())
 	{
-
+		$stm = $this->prepareStm($key);
+		$bool = $stm->execute($params);
+		if (!$bool) {
+			return false;
+		}
+		return $stm->rouCount();
 	}
 
 
@@ -87,10 +131,14 @@ class Pdoex {
 	public function prepareStm($key, $params = array(), $read_only = false)
 	{
 		$sql = $this->prepareSql($key, $params);
+		$sql_md5 = md5($sql);
+		if (isset($this->stm[$sql_md5])) {
+			return $this->stm[$sql_md5];
+		}
 		$pdo = $this->connect($this->getConnectName(), $read_only);
 		$stm = $pdo->prepare($sql);
-		// TODO...
-		// 缓存解析后的statement
+		$this->stm[$sql_md5] = $stm;
+		return $stm;
 	}
 
 	public function prefixParams($v, &$k)
