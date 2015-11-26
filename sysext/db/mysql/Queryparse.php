@@ -131,5 +131,12 @@ class Queryparse {
 
 		return str_replace('{table}', $tbname, $sql);
 	}
+
+	public function sqlValue(&$v, $k)
+	{
+		if (is_string($v)) {
+			$v = "\"{$v}\"";
+		}
+	}
 }
 

@@ -13,6 +13,7 @@ class Pdoex {
 	private $connect_name;
 	private $cache;
 	private $last_stm;
+	private $last_pdo;
 
 	public function __construct()
 	{
@@ -84,6 +85,7 @@ class Pdoex {
 	public function fetchOne($key, $params = array(), $from_cache = false)
 	{
 		$stm = $this->prepareStm($key);
+
 		$bool = $stm->execute($this->prefixParams($params));
 		if (!$bool) {
 			return false;
@@ -97,6 +99,14 @@ class Pdoex {
 		// TODO
 	}
 
+	public function lastInsertId()
+	{
+		if ($this->last_pdo) {
+			return $this->last_pdo->lastInsertId();
+		}
+		return false;
+	}
+
 	public function update($key, $values, $params = array())
 	{
 		$stm = $this->prepareStm($key, $values);
@@ -104,7 +114,7 @@ class Pdoex {
 		if (!$bool) {
 			return false;
 		}
-		return $stm->rouCount();
+		return $stm->rowCount();
 	}
 
 	public function insert($key, $values)
@@ -114,7 +124,7 @@ class Pdoex {
 		if (!$bool) {
 			return false;
 		}
-		return $stm->rouCount();
+		return $stm->rowCount();
 	}
 
 	public function delete($key, $params = array())
@@ -124,7 +134,7 @@ class Pdoex {
 		if (!$bool) {
 			return false;
 		}
-		return $stm->rouCount();
+		return $stm->rowCount();
 	}
 
 
@@ -141,7 +151,11 @@ class Pdoex {
 			if (empty($sql)) {
 				return false;
 			}
-			$this->parsed_stm[$key] = $sql . $this->extraSql();
+			if (empty($params)) {
+				$this->parsed_stm[$key] = $sql . $this->extraSql();	
+			} else {
+				return $sql . $this->extraSql();
+			}
 		}
 
 		return $this->parsed_stm[$key];
@@ -150,14 +164,18 @@ class Pdoex {
 	public function prepareStm($key, $params = array(), $read_only = false)
 	{
 		$sql = $this->prepareSql($key, $params);
+		$do_cache = empty($params);
 		$sql_md5 = md5($sql);
-		if (isset($this->stm[$sql_md5])) {
+		if (isset($this->stm[$sql_md5]) && $do_cache) {
 			return $this->stm[$sql_md5];
 		}
 		$pdo = $this->connect($this->getConnectName(), $read_only);
 		$stm = $pdo->prepare($sql);
-		$this->stm[$sql_md5] = $stm;
+		if ($do_cache) {
+			$this->stm[$sql_md5] = $stm;
+		}
 		$this->last_stm = $stm;
+		$this->last_pdo = $pdo;
 		return $stm;
 	}
 
