@@ -36,9 +36,9 @@ class Pdoex {
 
 	public function errorMsg()
 	{
-		$info = $this->last_stm->errorCode();
-		$info .= ':';
-		$info .= print_r($this->last_stm->errorInfo(), true);
+		$info = $this->last_stm->queryString . "\n";
+		$info .= "errorcode:" . $this->last_stm->errorCode() . "\n";
+		$info .= print_r($this->last_stm->errorInfo(), true) . "\n";
 		return $info;
 	}
 
@@ -60,18 +60,21 @@ class Pdoex {
 		$stm = $this->prepareStm($key);
 
 		$bool = $stm->execute($this->prefixParams($params));
-		if (!$bool) {
+		if ($stm->errorCode() != '00000') {
 			return false;
 		}
 		$stm->setFetchMode(PDO::FETCH_ASSOC);
-		return $stm->fetchAll(PDO::FETCH_ASSOC);
+		if (($temp = $stm->fetchAll(PDO::FETCH_ASSOC)) === false) {
+			return array();
+		}
+		return $temp;
 	}
 
 	public function fetchAllObjects($key, $params = array(), $from_cache = false)
 	{
 		$stm = $this->prepareStm($key);
 		$bool = $stm->execute($this->prefixParams($params));
-		if (!$bool) {
+		if ($stm->errorCode() != '00000') {
 			return false;
 		}
 		$stm->setFetchMode(PDO::FETCH_ASSOC);
@@ -87,11 +90,14 @@ class Pdoex {
 		$stm = $this->prepareStm($key);
 
 		$bool = $stm->execute($this->prefixParams($params));
-		if (!$bool) {
+		if ($stm->errorCode() != '00000') {
 			return false;
 		}
 		$stm->setFetchMode(PDO::FETCH_ASSOC);
-		return $stm->fetch();
+		if (($temp = $stm->fetch()) === false) {
+			return array();
+		} 
+		return $temp;
 	}
 
 	public function fetchGroup($key, $params = array(), $from_cache = false)
@@ -111,7 +117,7 @@ class Pdoex {
 	{
 		$stm = $this->prepareStm($key, $values);
 		$bool = $stm->execute($params);
-		if (!$bool) {
+		if ($stm->errorCode() != '00000') {
 			return false;
 		}
 		return $stm->rowCount();
@@ -121,7 +127,7 @@ class Pdoex {
 	{
 		$stm = $this->prepareStm($key, $values);
 		$bool = $stm->execute();
-		if (!$bool) {
+		if ($stm->errorCode() != '00000') {
 			return false;
 		}
 		return $stm->rowCount();
@@ -131,7 +137,7 @@ class Pdoex {
 	{
 		$stm = $this->prepareStm($key);
 		$bool = $stm->execute($params);
-		if (!$bool) {
+		if ($stm->errorCode() != '00000') {
 			return false;
 		}
 		return $stm->rowCount();
@@ -262,5 +268,4 @@ class Pdoex {
 		$temp = explode('.', $key);
 		return $temp[count($temp) - 2];
 	}
-
 }

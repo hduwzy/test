@@ -4,9 +4,9 @@ return array(
 //================================================================================================================================//
 'proj_by_app_module' => array(
 	'sql' 		=> 'select {fields} from {table} where a.app_name = :app_name and a.module_name = :module_name',
-	'tables'	=> array('sql_porjects' => 'a', ),
+	'tables'	=> array('sql_projects' => 'a', ),
 	'fields' 	=> array(
-		'sql_porjects' 			=> array('*'),
+		'sql_projects' 			=> array('*'),
 		'_other_'			=> array(),
 	),
 	'params'	=> array(

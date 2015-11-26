@@ -30,4 +30,15 @@ class Show extends Controller {
 
 		Flight::json($sqlinfo);
 	}
+
+	public function showsqlkey()
+	{
+		$sk = Flight::request()->getQuery('sk', '');
+		$sk = '%' . implode('%', explode('|', $sk)) . '%';
+		$sqlkey = Flight::db()->fetchAll(
+			'sql.sqldoc.sqlkey.select.sqlkey', 
+			array('sk' => $sk)
+		);
+		$this->app->json($sqlkey);
+	}
 }

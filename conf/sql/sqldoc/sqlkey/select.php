@@ -1,51 +1,39 @@
 <?php
 return array(
-//根据产品添加时间获取产品
+//
 //================================================================================================================================//
-'products_by_addtime' => array(
-	'sql' 		=> 'select {fields} from {table} where a.addtime >= :ltime and a.addtime <= :rtime',
-	'tables'	=> array('rs_goods' => 'a', 'rs_goods_multi' => 'b', 'rs_category' => 'c'),
-	'join'		=> array(
-		'relation' 	=> '#a join #b',
-		'on' 		=> 'a.goods_id = b.goods_id',
-		'join'		=> array(
-			'relation' 	=> 'join #c',
-			'on'		=> 'a.cat_id = c.cat_id',
-		)
-	),
+'sqlkey' => array(
+	'sql' 		=> 'select {fields} from {table} where a.key_name like :sk',
+	'tables'	=> array('sql_key' => 'a',),
 	'fields' 	=> array(
-		'rs_goods' 			=> array(),
-		'rs_goods_multi'	=> array(),
-		'rs_category'		=> array(),
+		'sql_key' 			=> array('*'),
 		'_other_'			=> array(),
 	),
 	'params'	=> array(
-		'ltime' => array('required' => 'required', 'comment' => '时间左区间'),
-		'rtime' => array('required' => 'option', 'comment' => '时间右区间'),
+		'sk' => array('required' => 'required', 'comment' => '搜索key', 'eg_val' => '%sqldoc%insert%'),
 	),
 	'comments' 	=> array(
-		'comment'	=> '根据产品添加时间获取产品',
+		'comment'	=> '根据key_name模糊匹配sql key',
 	),
 ),
 //================================================================================================================================//
-//根据产品分类获取产品
+//
 //================================================================================================================================//
-'products_by_cat' => array(
-	'sql' 		=> 'select {fields} from {table} where b.cat_id=:cat_id',
-	'tables'	=> array('rs_goods' => 'b'),
+'sqlkey_by_keyname' => array(
+	'sql' 		=> 'select {fields} from {table} where a.key_name = :keyname',
+	'tables'	=> array('sql_key' => 'a',),
 	'fields' 	=> array(
-		'rs_goods' 			=> array(),
+		'sql_key' 			=> array('*'),
 		'_other_'			=> array(),
 	),
 	'params'	=> array(
-		'cat_id' => array('required' => 'required', 'comment' => '分类id'),
+		'keyname' => array('required' => 'required', 'comment' => 'keyname', 'eg_val' => 'sql.sqldoc.sqlkey.sqlkey_by_keyname'),
 	),
 	'comments' 	=> array(
-		'comment'	=> '根据产品分类获取产品',
+		'comment'	=> '根据key_name准确查找sql key',
 	),
 ),
 //================================================================================================================================//
-
 
 
 

@@ -16,7 +16,8 @@ create table sql_params (
 	param_name 		char(255) not null default '',
 	param_comments 	varchar(2048) not null default '',
 	required 		char(64) not null default '',
-	eg_val 			char(255) not null default ''
+	eg_val 			char(255) not null default '',
+	unique key `param` (sk_id, param_name)
 )default charset=utf8;
 
 create table sql_rel_table (
