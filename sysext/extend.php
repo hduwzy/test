@@ -13,8 +13,8 @@ $app->register('request', '\sysext\net\Request', array(), function ($obj) use ($
 
 $app->register('conf', '\sysext\app\Conf', array(), function ($obj) use ($app) {
 	$obj->app = $app;
+	$app->set('app.confpath', $app->get('app.root') . '/conf');
 });
-
 
 $app->register('cookie', '\sysext\net\Cookie', array(), function ($obj) use ($app) {
 	$obj->app = $app;

@@ -8,6 +8,10 @@ class Show extends Controller {
 	public function before()
 	{
 		//echo "<h1>Before</h1>";
+		$view = $this->app->view();
+		$view->set('title', 'Hello World!!!');
+
+		
 	}
 
 	public function after()
@@ -40,5 +44,11 @@ class Show extends Controller {
 			array('sk' => $sk)
 		);
 		$this->app->json($sqlkey);
+	}
+
+	public function viewtest()
+	{
+		$view = $this->app->view();
+		$view->render('sqldoc/index');
 	}
 }
